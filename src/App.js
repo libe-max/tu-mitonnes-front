@@ -4,6 +4,14 @@ import LoadingError from 'libe-components/lib/blocks/LoadingError'
 import ShareArticle from 'libe-components/lib/blocks/ShareArticle'
 import LibeLaboLogo from 'libe-components/lib/blocks/LibeLaboLogo'
 import ArticleMeta from 'libe-components/lib/blocks/ArticleMeta'
+import { parseTsv } from 'libe-utils'
+import Header from './components/Header'
+import Filters from './components/Filters'
+import Articles from './components/Articles'
+
+window.APP_GLOBAL = {
+  root_class: 'lblb-tu-mitonnes'
+}
 
 export default class App extends Component {
   /* * * * * * * * * * * * * * * * *
@@ -13,11 +21,13 @@ export default class App extends Component {
    * * * * * * * * * * * * * * * * */
   constructor () {
     super()
-    this.c = 'lblb-some-app'
+    this.c = window.APP_GLOBAL.root_class
     this.state = {
       loading_sheet: true,
       error_sheet: null,
       data_sheet: [],
+      active_filters: {},
+      nb_articles_shown: 8,
       keystrokes_history: [],
       konami_mode: false
     }
@@ -25,6 +35,11 @@ export default class App extends Component {
     this.fetchCredentials = this.fetchCredentials.bind(this)
     this.listenToKeyStrokes = this.listenToKeyStrokes.bind(this)
     this.watchKonamiCode = this.watchKonamiCode.bind(this)
+    this.addCategoriesToData = this.addCategoriesToData.bind(this)
+    this.listCategoriesOptions = this.listCategoriesOptions.bind(this)
+    this.applyFilter = this.applyFilter.bind(this)
+    this.resetFilters = this.resetFilters.bind(this)
+    this.displayMoreEntries = this.displayMoreEntries.bind(this)
   }
 
   /* * * * * * * * * * * * * * * * *
@@ -99,8 +114,19 @@ export default class App extends Component {
       const reach = await window.fetch(this.props.spreadsheet)
       if (!reach.ok) throw reach
       const data = await reach.text()
-      const parsedData = data // Parse sheet here
-      this.setState({ loading_sheet: false, error_sheet: null, data_sheet: parsedData })
+      const parsedData = parseTsv(data, [23])[0].filter(article => article.ok === '1')
+      const articles = this.addCategoriesToData(parsedData)
+      const categories = this.listCategoriesOptions(articles)
+      const defaultActiveFilters = {}
+      Object.keys(categories).forEach(category => {
+        defaultActiveFilters[category] = '-'
+      })
+      this.setState({
+        loading_sheet: false,
+        error_sheet: null,
+        data_sheet: { articles, categories },
+        active_filters: defaultActiveFilters
+      })
       return data
     } catch (error) {
       if (error.status) {
@@ -142,11 +168,134 @@ export default class App extends Component {
 
   /* * * * * * * * * * * * * * * * *
    *
+   * ADD CATEGORIES TO DATA
+   *
+   * * * * * * * * * * * * * * * * */
+  addCategoriesToData (data) {
+    const categoriezed = data.map(article => {
+      const ingredients = article.ingredients.split(',').map(chunk => chunk.trim())
+      const dishType = article.dish_type.split(',').map(chunk => chunk.trim())
+      const season = article.season.split(',').map(chunk => chunk.trim())
+      return {
+        ...article,
+        _ingredients: ingredients,
+        _dish_type: dishType,
+        _season: season
+      }
+    })
+    return categoriezed
+  }
+
+  /* * * * * * * * * * * * * * * * *
+   *
+   * LIST CATEGORIES OPTIONS
+   *
+   * * * * * * * * * * * * * * * * */
+  listCategoriesOptions (data) {
+    const ingredientsList = []
+    const dishTypeList = []
+    const seasonList = []
+    data.forEach(article => {
+      article._ingredients.forEach(ingredient => {
+        if (!ingredientsList.find(e => e === ingredient)) {
+          ingredientsList.push(ingredient)
+        }
+      })
+      article._dish_type.forEach(dishType => {
+        if (!dishTypeList.find(e => e === dishType)) {
+          dishTypeList.push(dishType)
+        }
+      })
+      article._season.forEach(season => {
+        if (!seasonList.find(e => e === season)) {
+          seasonList.push(season)
+        }
+      })
+    })
+    return {
+      ingredients: ingredientsList,
+      dish_type: dishTypeList,
+      season: seasonList
+    }
+  }
+
+  /* * * * * * * * * * * * * * * * *
+   *
+   * APPLY FILTER
+   *
+   * * * * * * * * * * * * * * * * */
+  applyFilter (category, value) {
+    this.setState(current => {
+      return {
+        ...current,
+        active_filters: {
+          ...current.active_filters,
+          [category]: value
+        }
+      }
+    })
+  }
+
+  /* * * * * * * * * * * * * * * * *
+   *
+   * RESET FILTERS
+   *
+   * * * * * * * * * * * * * * * * */
+  resetFilters () {
+    this.setState(current => {
+      const newActiveFilters = {}
+      Object
+        .keys(current.active_filters)
+        .forEach(category => { newActiveFilters[category] = '-' })
+      return {
+        ...current,
+        active_filters: newActiveFilters
+      }
+    })
+  }
+
+  /* * * * * * * * * * * * * * * * *
+   *
+   * DISPLAY MORE ENTRIES
+   *
+   * * * * * * * * * * * * * * * * */
+  displayMoreEntries () {
+    this.setState(current => ({
+      ...current,
+      nb_articles_shown: current.nb_articles_shown + 5      
+    }))
+  }
+
+  /* * * * * * * * * * * * * * * * *
+   *
    * RENDER
    *
    * * * * * * * * * * * * * * * * */
   render () {
     const { c, state, props } = this
+
+    /* Inner logic */
+    const {
+      data_sheet: data,
+      active_filters: activeFilters,
+      nb_articles_shown: nbArticlesShown
+    } = state
+    const {
+      articles,
+      categories
+    } = data
+    const {
+      ingredients: activeIngredient,
+      dish_type: activeDishType,
+      season: activeSeason
+    } = activeFilters
+    const filteredArticles = (articles || []).filter(article => {
+      const hasCurrentIngredient = (activeIngredient === '-' || article._ingredients.find(e => e === activeIngredient))
+      const hasCurrentDishType = (activeDishType === '-' || article._dish_type.find(e => e === activeDishType))
+      const hasCurrentSeason = (activeSeason === '-' || article._season.find(e => e === activeSeason))
+      return hasCurrentIngredient && hasCurrentDishType && hasCurrentSeason
+    })
+    const slicedArticles = filteredArticles.slice(0, nbArticlesShown)
 
     /* Assign classes */
     const classes = [c]
@@ -159,17 +308,24 @@ export default class App extends Component {
 
     /* Display component */
     return <div className={classes.join(' ')}>
-      App is ready.<br />
-      - fill spreadsheet field in config.js<br />
-      - display it's content via state.data_sheet
+      <Header
+        tweet={props.meta.tweet}
+        url={props.meta.url} />
+      <Filters
+        categories={categories}
+        activeFilters={activeFilters}
+        applyFilter={this.applyFilter}
+        resetFilters={this.resetFilters} />
+      <Articles
+        articles={slicedArticles}
+        displayMoreEntries={this.displayMoreEntries} />
       <div className='lblb-default-apps-footer'>
         <ShareArticle short iconsOnly tweet={props.meta.tweet} url={props.meta.url} />
         <ArticleMeta
           publishedOn='02/09/2019 17:13' updatedOn='03/09/2019 10:36' authors={[
             { name: 'Jean-Sol Partre', role: '', link: 'www.liberation.fr' },
             { name: 'Maxime Fabas', role: 'Production', link: 'lol.com' }
-          ]}
-        />
+          ]} />
         <LibeLaboLogo target='blank' />
       </div>
     </div>

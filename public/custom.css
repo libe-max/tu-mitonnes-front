@@ -1,0 +1,20 @@
+.lblb-tu-mitonnes__header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.lblb-tu-mitonnes__articles {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.lblb-tu-mitonnes__article-tile {
+  width: 25vw;
+  height: 25vw;
+  background-color: #333333;
+  background-position: center;
+  background-size: cover;
+}

@@ -23,8 +23,8 @@ const config = {
   api_url: process.env.NODE_ENV === 'production'
     ? 'https://libe-labo-2.site/api'
     : `${currentProtocol}//${currentHostname}:3004/api`,
-  stylesheet: 'libe-apps-template.css', // The name of the css file hosted at ${statics_url}/styles/apps/
-  spreadsheet: undefined // The spreadsheet providing data to the app
+  stylesheet: 'tu-mitonnes.css',
+  spreadsheet: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSNn3afLhMtwFQNnKPBDgzB_LRI5p8DVVOBP1iQrRjF5xT3hZ66-6U8bySnz_HENu4-VWi5jFssrqvo/pub?gid=0&single=true&output=tsv'
 }
 
 module.exports = config
