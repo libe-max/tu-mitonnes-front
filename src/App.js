@@ -4,6 +4,7 @@ import LoadingError from 'libe-components/lib/blocks/LoadingError'
 import ShareArticle from 'libe-components/lib/blocks/ShareArticle'
 import LibeLaboLogo from 'libe-components/lib/blocks/LibeLaboLogo'
 import ArticleMeta from 'libe-components/lib/blocks/ArticleMeta'
+import Paragraph from 'libe-components/lib/text-levels/Paragraph'
 import { parseTsv } from 'libe-utils'
 import Header from './components/Header'
 import Filters from './components/Filters'
@@ -173,9 +174,9 @@ export default class App extends Component {
    * * * * * * * * * * * * * * * * */
   addCategoriesToData (data) {
     const categoriezed = data.map(article => {
-      const ingredients = article.ingredients.split(',').map(chunk => chunk.trim())
-      const dishType = article.dish_type.split(',').map(chunk => chunk.trim())
-      const season = article.season.split(',').map(chunk => chunk.trim())
+      const ingredients = article.ingredients.split(',').map(chunk => chunk.trim()).filter(e => e)
+      const dishType = article.dish_type.split(',').map(chunk => chunk.trim()).filter(e => e)
+      const season = article.season.split(',').map(chunk => chunk.trim()).filter(e => e)
       return {
         ...article,
         _ingredients: ingredients,
@@ -296,6 +297,12 @@ export default class App extends Component {
       return hasCurrentIngredient && hasCurrentDishType && hasCurrentSeason
     })
     const slicedArticles = filteredArticles.slice(0, nbArticlesShown)
+    const someRandomArticles = (articles || [])
+      .map(e => ({ value: e, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .map(e => e.value)
+      .slice(0, 12)
+    const articlesToDisplay = slicedArticles.length ? slicedArticles : someRandomArticles
 
     /* Assign classes */
     const classes = [c]
@@ -316,16 +323,28 @@ export default class App extends Component {
         activeFilters={activeFilters}
         applyFilter={this.applyFilter}
         resetFilters={this.resetFilters} />
+      {!slicedArticles.length && <span className={`${c}__no-filter-result`}>
+        <Paragraph>
+          Aucune recette ne correspond à vos critères. En voici quelques unes au hasard.
+        </Paragraph>
+      </span>}
       <Articles
-        articles={slicedArticles}
-        displayMoreEntries={this.displayMoreEntries} />
+        articles={articlesToDisplay}
+        displayMoreEntries={this.displayMoreEntries}
+        showLoadMore={slicedArticles.length !== filteredArticles.length} />
+      {!slicedArticles.length && <span className={`${c}__no-filter-result`}>
+        <Paragraph>
+          Aucune recette ne correspond à vos critères. Ci-dessus, quelques unes au hasard.
+        </Paragraph>
+      </span>}
       <div className='lblb-default-apps-footer'>
         <ShareArticle short iconsOnly tweet={props.meta.tweet} url={props.meta.url} />
         <ArticleMeta
-          publishedOn='02/09/2019 17:13' updatedOn='03/09/2019 10:36' authors={[
-            { name: 'Jean-Sol Partre', role: '', link: 'www.liberation.fr' },
-            { name: 'Maxime Fabas', role: 'Production', link: 'lol.com' }
-          ]} />
+          authors={[{
+            name: 'Libé Labo',
+            role: 'Production',
+            link: 'https://www.liberation.fr/libe-labo-data-nouveaux-formats,100538'
+          }]} />
         <LibeLaboLogo target='blank' />
       </div>
     </div>

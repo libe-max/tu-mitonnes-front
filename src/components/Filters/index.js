@@ -1,6 +1,7 @@
-import React, { useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import ParagraphTitle from 'libe-components/lib/text-levels/ParagraphTitle'
 import Paragraph from 'libe-components/lib/text-levels/Paragraph'
+import Svg from 'libe-components/lib/primitives/Svg'
 
 /*
  *   FILTERS
@@ -24,6 +25,7 @@ export default function Filters (props) {
     dish_type: activeDishType,
     season: activeSeason
   } = activeFilters
+  const [isOpen, setIsOpen] = useState(false)
 
   /* * * * * * * * * * * * * * * *
    *
@@ -33,6 +35,7 @@ export default function Filters (props) {
   const ingredientsListRef = useRef(null)
   const dishTypeListRef = useRef(null)
   const seasonListRef = useRef(null)
+  const style = { top: `${window.LBLB_GLOBAL.body_padding_top || 0}px` }
 
   /* * * * * * * * * * * * * * * *
    *
@@ -40,27 +43,55 @@ export default function Filters (props) {
    *
    * * * * * * * * * * * * * * * */
   function handleIngredientsChange (e) {
-    if (!e || !e.target) return
     applyFilter('ingredients', e.target.value)
   }
 
   function handleDishTypeChange (e) {
-    if (!e || !e.target) return
     applyFilter('dish_type', e.target.value)
   }
 
   function handleSeasonChange (e) {
-    if (!e || !e.target) return
     applyFilter('season', e.target.value)
   }
 
   function handleResetClick (e) {
-    if (!e || !e.target) return
-    ingredientsListRef.current.value = '-'
-    dishTypeListRef.current.value = '-'
-    seasonListRef.current.value = '-'
     resetFilters()
   }
+
+  function handleOpenButtonClick (e) {
+    e.stopPropagation()
+    togglePanel()
+  }
+
+  function handleCloseButtonClick (e) {
+    e.stopPropagation()
+    togglePanel()
+  }
+
+  function handleTitleAndActionsClick (e) {
+    e.stopPropagation()
+    togglePanel()
+  }
+
+  /* * * * * * * * * * * * * * * *
+   *
+   * METHODS
+   *
+   * * * * * * * * * * * * * * * */
+  function togglePanel () {
+    setIsOpen(current => !current)
+  }
+
+  /* * * * * * * * * * * * * * * *
+   *
+   * EFFECTS
+   *
+   * * * * * * * * * * * * * * * */
+  useEffect(() => {
+    dishTypeListRef.current.value = activeFilters.dish_type
+    seasonListRef.current.value = activeFilters.season
+    ingredientsListRef.current.value = activeFilters.ingredients
+  }, [activeDishType, activeSeason, activeIngredient])
 
   /* * * * * * * * * * * * * * * *
    *
@@ -68,58 +99,87 @@ export default function Filters (props) {
    *
    * * * * * * * * * * * * * * * */
   const classes = [c]
+  if (isOpen) classes.push(`${c}_is-open`)
 
   /* * * * * * * * * * * * * * * *
    *
    * RENDER
    *
    * * * * * * * * * * * * * * * */
-  return <div className={classes.join(' ')}>
-    <ParagraphTitle>Filtres</ParagraphTitle>
-    <Paragraph>Ingrédients :</Paragraph>
-    <select
-      defaultValue='-'
-      ref={ingredientsListRef}
-      onChange={handleIngredientsChange}>
-      <option value='-'>Tous</option>
-      {categories.ingredients.map(opt => (
-        <option
-          key={opt}
-          value={opt}>
-          {opt}
-        </option>
-      ))}
-    </select>
-    <Paragraph>Type de plat :</Paragraph>
-    <select
-      defaultValue='-'
-      ref={dishTypeListRef}
-      onChange={handleDishTypeChange}>
-      <option value='-'>Tous</option>
-      {categories.dish_type.map(opt => (
-        <option
-          key={opt}
-          value={opt}>
-          {opt}
-        </option>
-      ))}
-    </select>
-    <Paragraph>Saison :</Paragraph>
-    <select
-      defaultValue='-'
-      ref={seasonListRef}
-      onChange={handleSeasonChange}>
-      <option value='-'>Tous</option>
-      {categories.season.map(opt => (
-        <option
-          key={opt}
-          value={opt}>
-          {opt}
-        </option>
-      ))}
-    </select>
-    <button onClick={handleResetClick}>
-      Réinitialiser
-    </button>
+  return <div
+    style={style}
+    className={classes.join(' ')}>
+    <span
+      onClick={handleTitleAndActionsClick}
+      className={`${c}__title-and-actions`}>
+      <span className={`${c}__title`}>
+        <ParagraphTitle>Filtres</ParagraphTitle>
+      </span>
+      <span className={`${c}__actions`}>
+        <span className={`${c}__open`}>
+          <button onClick={handleOpenButtonClick}>
+            <Svg src='https://www.liberation.fr/apps/static/assets/down-arrow-head-icon_24.svg' />
+          </button>
+        </span>
+        <span className={`${c}__close`}>
+          <button onClick={handleCloseButtonClick}>
+            <Svg src='https://www.liberation.fr/apps/static/assets/up-arrow-head-icon_24.svg' />
+          </button>
+        </span>
+      </span>
+    </span>
+    <span className={`${c}__filter`}>
+      <Paragraph>par saison</Paragraph>
+      <select
+        defaultValue='-'
+        ref={seasonListRef}
+        onChange={handleSeasonChange}>
+        <option value='-'>Tous</option>
+        {categories.season.map(opt => (
+          <option
+            key={opt}
+            value={opt}>
+            {`${opt.slice(0, 1).toUpperCase()}${opt.slice(1)}`}
+          </option>
+        ))}
+      </select>
+    </span>
+    <span className={`${c}__filter`}>
+      <Paragraph>par type de plat</Paragraph>
+      <select
+        defaultValue='-'
+        ref={dishTypeListRef}
+        onChange={handleDishTypeChange}>
+        <option value='-'>Tous</option>
+        {categories.dish_type.map(opt => (
+          <option
+            key={opt}
+            value={opt}>
+            {`${opt.slice(0, 1).toUpperCase()}${opt.slice(1)}`}
+          </option>
+        ))}
+      </select>
+    </span>
+    <span className={`${c}__filter`}>
+      <Paragraph>par ingrédient</Paragraph>
+      <select
+        defaultValue='-'
+        ref={ingredientsListRef}
+        onChange={handleIngredientsChange}>
+        <option value='-'>Tous</option>
+        {categories.ingredients.map(opt => (
+          <option
+            key={opt}
+            value={opt}>
+            {`${opt.slice(0, 1).toUpperCase()}${opt.slice(1)}`}
+          </option>
+        ))}
+      </select>
+    </span>
+    <span className={`${c}__reset`}>
+      <Paragraph>
+        <a onClick={handleResetClick}>Réinitialiser</a>
+      </Paragraph>
+    </span>
   </div>
 }
