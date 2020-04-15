@@ -101,7 +101,8 @@ class AppWrapper extends Component {
     xtCore.setAttribute('type', 'text/javascript')
     xtCore.setAttribute('src', 'https://statics.liberation.fr/bloom/theme/js/xtcore.js')
     if (config.show_header) document.body.appendChild(headerScript)
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production'
+      && window.location.host === 'www.liberation.fr') {
       document.body.appendChild(chartbeat)
       document.body.appendChild(googleAnalytics)
       document.body.appendChild(xiti)

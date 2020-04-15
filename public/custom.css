@@ -73,6 +73,10 @@
   margin-right: .5rem;
 }
 
+.lblb-tu-mitonnes__filters__reset {
+  margin-left: 1rem;
+}
+
 .lblb-tu-mitonnes__filters__reset
   .lblb-paragraph a {
     color: #FFFFFF;
@@ -98,7 +102,7 @@
 
 .lblb-tu-mitonnes__filters__open .lblb-svg #fill-1,
 .lblb-tu-mitonnes__filters__close .lblb-svg #fill-1 {
-  fill: #212121;
+  fill: #FFFFFF;
 }
 
 .lblb-tu-mitonnes__filters__filter select {
@@ -152,7 +156,7 @@
 
   .lblb-tu-mitonnes__filters__title
     .lblb-paragraph-title {
-      color: #212121;
+      /*color: #212121;*/
   }
 
   .lblb-tu-mitonnes__filters__filter {
@@ -167,6 +171,10 @@
   .lblb-tu-mitonnes__filters__filter,
   .lblb-tu-mitonnes__filters__reset {
     display: none;
+  }
+
+  .lblb-tu-mitonnes__filters__reset {
+    margin-left: unset;
   }
 
   .lblb-tu-mitonnes__filters__actions {

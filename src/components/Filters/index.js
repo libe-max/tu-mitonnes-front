@@ -56,6 +56,7 @@ export default function Filters (props) {
 
   function handleResetClick (e) {
     resetFilters()
+    closePanel()
   }
 
   function handleOpenButtonClick (e) {
@@ -80,6 +81,14 @@ export default function Filters (props) {
    * * * * * * * * * * * * * * * */
   function togglePanel () {
     setIsOpen(current => !current)
+  }
+
+  function openPanel () {
+    setIsOpen(true)
+  }
+
+  function closePanel () {
+    setIsOpen(false)
   }
 
   /* * * * * * * * * * * * * * * *

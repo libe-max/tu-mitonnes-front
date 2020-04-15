@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import chroma from 'chroma-js'
+import colors from 'colors'
 import SectionTitle from 'libe-components/lib/text-levels/SectionTitle'
 import Paragraph from 'libe-components/lib/text-levels/Paragraph'
 import Slug from 'libe-components/lib/text-levels/Slug'
 
 /*
- *   ARTICLES
+ *   ARTICLE TILE
  *   ------------------------------------------------------
  *
  *   PROPS
@@ -20,31 +22,62 @@ export default function ArticleTile (props) {
    * * * * * * * * * * * * * * * */
   const c = `${window.APP_GLOBAL.root_class}__article-tile`
   const { article } = props
+  const [colors, setColors] = useState(['#FAFAFA', '#e91845', '#333333'])
 
   /* * * * * * * * * * * * * * * *
    *
-   * LOGIC
+   * EFFECTS
    *
    * * * * * * * * * * * * * * * */
-  const possibleBgColors = article.call_photo_colors.split(',').map(color => color.trim())
-  const wrapperStyle = {
-    backgroundColor: possibleBgColors.length ? possibleBgColors[1] : '#FAFAFA',
-    backgroundImage: `url(${article.call_photo_url})`
+  // Define colors when mounting
+  useEffect(() => {
+    const possibleBgColors = article.call_photo_colors.split(',').map(color => color.trim())
+    if (possibleBgColors.length !== 5) return
+
+    const mostVivid = possibleBgColors.map(hex => {
+      const color = chroma(hex)
+      const [h, s, l] = color.hsl()
+      const distToAvgL = Math.random() // Math.abs(l - .5) * (s / 2)
+      return { hex, distToAvgL }
+    }).sort((a, b) => a.distToAvgL - b.distToAvgL)[0].hex
+    const twoBestContrasts = possibleBgColors.map(hex => {
+      const color = chroma(hex)
+      const contrast = chroma.contrast(hex, mostVivid)
+      return { hex, contrast }
+    }).sort((a, b) => b.contrast - a.contrast)
+      .slice(0, 2)
+      .map(val => val.hex)
+    const finalColorList = possibleBgColors.map(hex => {
+      const color = chroma(hex)
+      const isContrast = twoBestContrasts.indexOf(hex) !== -1
+      const isVivid = hex === mostVivid
+      return { hex, color, isContrast, isVivid }
+    })
+    setColors([mostVivid, ...twoBestContrasts])
+  }, [])
+
+  const wrapperStyle = { backgroundColor: colors[1], backgroundImage: `url(${article.call_photo_url})` }
+  const hoverBoxStyle = { backgroundColor: colors[1] }
+  const textStyle = { color: colors[0], textShadow: `.125rem .125rem 0 ${colors[2]}` }
+  const tagStyle = { color: colors[2], backgroundColor: colors[0], }
+  const linkStyle = { color: colors[0], borderBottomColor: colors[2], }
+
+  /* * * * * * * * * * * * * * * *
+   *
+   * HANDLERS
+   *
+   * * * * * * * * * * * * * * * */
+  function handleTileClick (e) {
+    openArticleInNewTab()
   }
-  const hoverBoxStyle = {
-    backgroundColor: possibleBgColors.length ? possibleBgColors[1] : '#333333'
-  }
-  const textStyle = {
-    color: possibleBgColors.length ? possibleBgColors[0] : '#FFFFFF',
-    textShadow: `.125rem .125rem 0 ${possibleBgColors.length ? possibleBgColors[2] : '#333333'}`
-  }
-  const tagStyle = {
-    color: possibleBgColors.length ? possibleBgColors[2] : '#333333',
-    backgroundColor: possibleBgColors.length ? possibleBgColors[3] : '#FFFFFF',
-  }
-  const linkStyle = {
-    color: possibleBgColors.length ? possibleBgColors[3] : '#FFFFFF',
-    borderBottomColor: possibleBgColors.length ? possibleBgColors[3] : '#FFFFFF',
+
+  /* * * * * * * * * * * * * * * *
+   *
+   * METHODS
+   *
+   * * * * * * * * * * * * * * * */
+  function openArticleInNewTab () {
+    window.open(article.url, '_blank')
   }
 
   /* * * * * * * * * * * * * * * *
@@ -56,6 +89,7 @@ export default function ArticleTile (props) {
 
   return <div
     style={wrapperStyle}
+    onClick={handleTileClick}
     className={classes.join(' ')}>
     <div
       style={hoverBoxStyle}
@@ -80,7 +114,7 @@ export default function ArticleTile (props) {
         ))}
       </div>
       <div className={`${c}__open-article`}>
-        <Paragraph><a style={linkStyle} href={article.url}>Lire l'article</a></Paragraph>
+        <Paragraph><a style={linkStyle}>Lire l'article</a></Paragraph>
       </div>
     </div>
   </div>
