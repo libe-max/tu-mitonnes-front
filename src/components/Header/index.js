@@ -35,16 +35,9 @@ export default function Header (props) {
    *
    * * * * * * * * * * * * * * * */
   return <div className={classes.join(' ')}>
-    <div className={`${c}__logo`}>
-      <Svg src='./logo-tu-mitonnes.svg' />
-    </div>
-    <PageTitle small>le moteur<br/>de recherche</PageTitle>
+    <PageTitle small>Faites à la maison</PageTitle>
     <Paragraph literary>
-      Depuis 2009, les pages culinaires Tu mitonnes proposent découvertes gustatives et recettes, d'abord dans le journal, puis sur le site de Libération. Elles ont été rassemblées dans ce moteur de recherche, où des filtres permettent de faire varier les couleurs et les saisons. Jacky Durand aux textes et aux fourneaux, Emmanuel Pierrot aux gifs et aux photos.
-      <br/><br/>
-      <strong>Lire l'interview croisée :</strong>
-      <br/><br/>
-      <a href='https://next.liberation.fr/food/2016/09/13/quand-emmanuel-travaille-la-sardine-ou-le-maquereau-cela-ressemble-a-du-court-metrage_1484560'>«Quand Emmanuel travaille la sardine ou le maquereau, cela ressemble à du court-métrage»</a>
+      Musique, food, séries… retrouvez notre sélection d'articles utiles en cette période de confinement.
     </Paragraph>
     <ShareArticle short iconsOnly tweet={tweet} url={url} />
   </div>

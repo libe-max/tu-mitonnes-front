@@ -108,7 +108,7 @@ export default function Filters (props) {
       onClick={handleTitleAndActionsClick}
       className={`${c}__title-and-actions`}>
       <span className={`${c}__title`}>
-        <ParagraphTitle>Filtres</ParagraphTitle>
+        <ParagraphTitle>Filtrer</ParagraphTitle>
       </span>
       <span className={`${c}__actions`}>
         <span className={`${c}__open`}>
@@ -124,7 +124,6 @@ export default function Filters (props) {
       </span>
     </span>
     <span className={`${c}__filter`}>
-      <Paragraph>par saison</Paragraph>
       <select
         defaultValue='-'
         ref={seasonListRef}

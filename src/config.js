@@ -3,18 +3,18 @@ const currentHostname = typeof window !== 'undefined' ? window.location.hostname
 
 const config = {
   meta: {
-    author: 'Maxime Fabas',
-    title: 'Libé apps template',
-    url: '',
-    description: '',
-    image: '',
-    xiti_id: 'test',
-    tweet: 'Some tweet text',
+    author: 'Libé Labo',
+    title: 'Faites à la maison',
+    url: 'https://www.liberation.fr/apps/2020/03/selection-articles-liberation',
+    description: 'Musique, food, séries… retrouvez notre sélection d\'articles utiles en cette période de confinement.',
+    image: 'https://www.liberation.fr/apps/2020/03/selection-articles-liberation/social.jpg',
+    xiti_id: 'faites-a-la-maison',
+    tweet: 'Musique, food, séries… retrouvez la sélection d\'articles de «Libération» utiles en cette période de confinement.',
   },
   tracking: {
     active: false,
-    format: 'libe-apps-template',
-    article: 'libe-apps-template'
+    format: 'tu-mitonnes',
+    article: 'faites-a-la-maison'
   },
   show_header: true,
   statics_url: process.env.NODE_ENV === 'production'

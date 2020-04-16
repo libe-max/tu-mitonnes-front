@@ -7,7 +7,8 @@ import Paragraph from 'libe-components/lib/text-levels/Paragraph'
  *   ------------------------------------------------------
  *
  *   PROPS
- *   articles, displayMoreEntries, showLoadMore
+ *   articles, displayMoreEntries, showLoadMore,
+ *   openArticleViaTitle
  *   
  */
 
@@ -18,7 +19,12 @@ export default function Articles (props) {
    *
    * * * * * * * * * * * * * * * */
   const c = `${window.APP_GLOBAL.root_class}__articles`
-  const { articles, displayMoreEntries, showLoadMore } = props
+  const {
+    articles,
+    displayMoreEntries,
+    showLoadMore,
+    openArticleViaTitle
+  } = props
 
   /* * * * * * * * * * * * * * * *
    *
@@ -26,7 +32,6 @@ export default function Articles (props) {
    *
    * * * * * * * * * * * * * * * */
   const loadMoreButton = useRef()
-  const everythingIsLoaded = 
 
   /* * * * * * * * * * * * * * * *
    *
@@ -71,6 +76,7 @@ export default function Articles (props) {
       articles.map(article => {
         return <ArticleTile
           c={c}
+          openArticleViaTitle={openArticleViaTitle}
           key={article.title}
           article={article} />
       })}

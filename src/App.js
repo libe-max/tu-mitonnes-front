@@ -9,6 +9,7 @@ import { parseTsv } from 'libe-utils'
 import Header from './components/Header'
 import Filters from './components/Filters'
 import Articles from './components/Articles'
+import FullArticle from './components/FullArticle'
 
 window.APP_GLOBAL = {
   root_class: 'lblb-tu-mitonnes'
@@ -28,6 +29,7 @@ export default class App extends Component {
       error_sheet: null,
       data_sheet: [],
       active_filters: {},
+      open_article: null,
       nb_articles_shown: 8,
       keystrokes_history: [],
       konami_mode: false
@@ -41,6 +43,8 @@ export default class App extends Component {
     this.applyFilter = this.applyFilter.bind(this)
     this.resetFilters = this.resetFilters.bind(this)
     this.displayMoreEntries = this.displayMoreEntries.bind(this)
+    this.openArticleViaTitle = this.openArticleViaTitle.bind(this)
+    this.closeArticle = this.closeArticle.bind(this)
   }
 
   /* * * * * * * * * * * * * * * * *
@@ -174,13 +178,9 @@ export default class App extends Component {
    * * * * * * * * * * * * * * * * */
   addCategoriesToData (data) {
     const categoriezed = data.map(article => {
-      // const ingredients = article.ingredients.split(',').map(chunk => chunk.trim()).filter(e => e)
-      // const dishType = article.dish_type.split(',').map(chunk => chunk.trim()).filter(e => e)
       const season = article.season.split(',').map(chunk => chunk.trim()).filter(e => e)
       return {
         ...article,
-        // _ingredients: ingredients,
-        // _dish_type: dishType,
         _season: season
       }
     })
@@ -193,20 +193,8 @@ export default class App extends Component {
    *
    * * * * * * * * * * * * * * * * */
   listCategoriesOptions (data) {
-    // const ingredientsList = []
-    // const dishTypeList = []
     const seasonList = []
     data.forEach(article => {
-      // article._ingredients.forEach(ingredient => {
-      //   if (!ingredientsList.find(e => e === ingredient)) {
-      //     ingredientsList.push(ingredient)
-      //   }
-      // })
-      // article._dish_type.forEach(dishType => {
-      //   if (!dishTypeList.find(e => e === dishType)) {
-      //     dishTypeList.push(dishType)
-      //   }
-      // })
       article._season.forEach(season => {
         if (!seasonList.find(e => e === season)) {
           seasonList.push(season)
@@ -214,8 +202,6 @@ export default class App extends Component {
       })
     })
     return {
-      // ingredients: ingredientsList,
-      // dish_type: dishTypeList,
       season: seasonList
     }
   }
@@ -269,6 +255,31 @@ export default class App extends Component {
 
   /* * * * * * * * * * * * * * * * *
    *
+   * OPEN ARTICLE VIA TITLE
+   *
+   * * * * * * * * * * * * * * * * */
+  openArticleViaTitle (title) {
+    const article = this.state.data_sheet.articles.find(article => article.title === title)
+    if (!article) return this.closeArticle()
+    this.setState(current => ({
+      ...current,
+      open_article: article
+    }))
+    document.querySelector('body').style.overflowY = 'hidden'
+  }
+
+  /* * * * * * * * * * * * * * * * *
+   *
+   * CLOSE ARTICLE
+   *
+   * * * * * * * * * * * * * * * * */
+  closeArticle () {
+    document.querySelector('body').style.overflowY = ''
+    this.setState({ open_article: null })
+  }
+
+  /* * * * * * * * * * * * * * * * *
+   *
    * RENDER
    *
    * * * * * * * * * * * * * * * * */
@@ -279,7 +290,8 @@ export default class App extends Component {
     const {
       data_sheet: data,
       active_filters: activeFilters,
-      nb_articles_shown: nbArticlesShown
+      nb_articles_shown: nbArticlesShown,
+      open_article: openArticle
     } = state
     const {
       articles,
@@ -291,10 +303,7 @@ export default class App extends Component {
       season: activeSeason
     } = activeFilters
     const filteredArticles = (articles || []).filter(article => {
-      // const hasCurrentIngredient = (activeIngredient === '-' || article._ingredients.find(e => e === activeIngredient))
-      // const hasCurrentDishType = (activeDishType === '-' || article._dish_type.find(e => e === activeDishType))
       const hasCurrentSeason = (activeSeason === '-' || article._season.find(e => e === activeSeason))
-      // return hasCurrentIngredient && hasCurrentDishType && hasCurrentSeason
       return hasCurrentSeason
     })
     const slicedArticles = filteredArticles.slice(0, nbArticlesShown)
@@ -309,6 +318,7 @@ export default class App extends Component {
     const classes = [c]
     if (state.loading_sheet) classes.push(`${c}_loading`)
     if (state.error_sheet) classes.push(`${c}_error`)
+    if (openArticle) classes.push(`${c}_full-article-opened`)
 
     /* Load & errors */
     if (state.loading_sheet) return <div className={classes.join(' ')}><div className='lblb-default-apps-loader'><Loader /></div></div>
@@ -331,6 +341,7 @@ export default class App extends Component {
       </span>}
       <Articles
         articles={articlesToDisplay}
+        openArticleViaTitle={this.openArticleViaTitle}
         displayMoreEntries={this.displayMoreEntries}
         showLoadMore={slicedArticles.length !== filteredArticles.length} />
       {!slicedArticles.length && <span className={`${c}__no-filter-result`}>
@@ -338,6 +349,10 @@ export default class App extends Component {
           Aucune recette ne correspond à vos critères. Ci-dessus, quelques unes au hasard.
         </Paragraph>
       </span>}
+      {openArticle
+      && <FullArticle
+        closeArticle={this.closeArticle}
+        article={openArticle} />}
       <div className='lblb-default-apps-footer'>
         <ShareArticle short iconsOnly tweet={props.meta.tweet} url={props.meta.url} />
         <ArticleMeta

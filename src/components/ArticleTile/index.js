@@ -10,7 +10,7 @@ import Slug from 'libe-components/lib/text-levels/Slug'
  *   ------------------------------------------------------
  *
  *   PROPS
- *   article
+ *   article, openArticleViaTitle
  *   
  */
 
@@ -21,7 +21,7 @@ export default function ArticleTile (props) {
    *
    * * * * * * * * * * * * * * * */
   const c = `${window.APP_GLOBAL.root_class}__article-tile`
-  const { article } = props
+  const { article, openArticleViaTitle } = props
   const [colors, setColors] = useState(['#FAFAFA', '#e91845', '#333333'])
 
   /* * * * * * * * * * * * * * * *
@@ -57,10 +57,10 @@ export default function ArticleTile (props) {
   }, [])
 
   const wrapperStyle = { backgroundColor: colors[1], backgroundImage: `url(${article.call_photo_url})` }
-  const hoverBoxStyle = { backgroundColor: colors[1] }
+  const hoverBoxStyle = { backgroundColor: `rgba(${chroma(colors[1]).rgba().slice(0, -1).join(', ')} ,.8)` }
   const textStyle = { color: colors[0], textShadow: `.125rem .125rem 0 ${colors[2]}` }
-  const tagStyle = { color: colors[2], backgroundColor: colors[0], }
-  const linkStyle = { color: colors[0], borderBottomColor: colors[2], }
+  const tagStyle = { color: colors[2], backgroundColor: colors[0] }
+  const linkStyle = { color: colors[0], borderBottomColor: colors[2] }
 
   /* * * * * * * * * * * * * * * *
    *
@@ -68,7 +68,7 @@ export default function ArticleTile (props) {
    *
    * * * * * * * * * * * * * * * */
   function handleTileClick (e) {
-    openArticleInNewTab()
+    openArticle()
   }
 
   /* * * * * * * * * * * * * * * *
@@ -76,8 +76,8 @@ export default function ArticleTile (props) {
    * METHODS
    *
    * * * * * * * * * * * * * * * */
-  function openArticleInNewTab () {
-    window.open(article.url, '_blank')
+  function openArticle () {
+    openArticleViaTitle(article.title)
   }
 
   /* * * * * * * * * * * * * * * *
@@ -91,20 +91,15 @@ export default function ArticleTile (props) {
     style={wrapperStyle}
     onClick={handleTileClick}
     className={classes.join(' ')}>
-    <div
-      style={hoverBoxStyle}
-      className={`${c}__shaded-hover-bg`}>
-      &nbsp;
-    </div>
-    <div className={`${c}__content`}>
-      <SectionTitle big>
-        <span style={textStyle}>{article.title}</span>
-      </SectionTitle>
+    <div style={hoverBoxStyle} className={`${c}__content`}>
       <div className={`${c}__tags`}>
         {article.slug && <span className={`${c}__tag`}>
           <Slug style={tagStyle}>{article.slug}</Slug>
         </span>}
       </div>
+      <SectionTitle>
+        <span style={textStyle}>{article.title}</span>
+      </SectionTitle>
       <div className={`${c}__open-article`}>
         <Paragraph><a style={linkStyle}>Lire l'article</a></Paragraph>
       </div>
