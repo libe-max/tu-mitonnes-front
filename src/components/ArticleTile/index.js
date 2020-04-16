@@ -101,17 +101,9 @@ export default function ArticleTile (props) {
         <span style={textStyle}>{article.title}</span>
       </SectionTitle>
       <div className={`${c}__tags`}>
-        {article.dish_type && <span className={`${c}__tag`}>
-          <Slug style={tagStyle}>{article.dish_type}</Slug>
+        {article.slug && <span className={`${c}__tag`}>
+          <Slug style={tagStyle}>{article.slug}</Slug>
         </span>}
-        {article.season && <span className={`${c}__tag`}>
-          <Slug style={tagStyle}>{article.season}</Slug>
-        </span>}
-        {article._ingredients.map(ingredient => (
-          <span key={ingredient} className={`${c}__tag`}>
-            <Slug style={tagStyle}>{ingredient}</Slug>
-          </span>
-        ))}
       </div>
       <div className={`${c}__open-article`}>
         <Paragraph><a style={linkStyle}>Lire l'article</a></Paragraph>

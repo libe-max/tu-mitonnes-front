@@ -24,7 +24,7 @@ const config = {
     ? 'https://libe-labo-2.site/api'
     : `${currentProtocol}//${currentHostname}:3004/api`,
   stylesheet: 'tu-mitonnes.css',
-  spreadsheet: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSNn3afLhMtwFQNnKPBDgzB_LRI5p8DVVOBP1iQrRjF5xT3hZ66-6U8bySnz_HENu4-VWi5jFssrqvo/pub?gid=0&single=true&output=tsv'
+  spreadsheet: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRMEDHCT7NgS4u7lTlZvU3HtspGMgRo-6lRInaiQ13tSlDVa61RybKaW0VV-VuqpLW2r_6sQdAuBVAJ/pub?gid=0&single=true&output=tsv'
 }
 
 module.exports = config

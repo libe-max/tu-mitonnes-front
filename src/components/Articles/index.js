@@ -71,7 +71,7 @@ export default function Articles (props) {
       articles.map(article => {
         return <ArticleTile
           c={c}
-          key={article.id}
+          key={article.title}
           article={article} />
       })}
     </div>

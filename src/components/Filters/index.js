@@ -21,8 +21,6 @@ export default function Filters (props) {
   const c = `${window.APP_GLOBAL.root_class}__filters`
   const { categories, activeFilters, applyFilter, resetFilters } = props
   const {
-    ingredients: activeIngredient,
-    dish_type: activeDishType,
     season: activeSeason
   } = activeFilters
   const [isOpen, setIsOpen] = useState(false)
@@ -32,8 +30,6 @@ export default function Filters (props) {
    * LOGIC
    *
    * * * * * * * * * * * * * * * */
-  const ingredientsListRef = useRef(null)
-  const dishTypeListRef = useRef(null)
   const seasonListRef = useRef(null)
   const style = { top: `${window.LBLB_GLOBAL.body_padding_top || 0}px` }
 
@@ -42,14 +38,6 @@ export default function Filters (props) {
    * HANDLERS
    *
    * * * * * * * * * * * * * * * */
-  function handleIngredientsChange (e) {
-    applyFilter('ingredients', e.target.value)
-  }
-
-  function handleDishTypeChange (e) {
-    applyFilter('dish_type', e.target.value)
-  }
-
   function handleSeasonChange (e) {
     applyFilter('season', e.target.value)
   }
@@ -97,10 +85,8 @@ export default function Filters (props) {
    *
    * * * * * * * * * * * * * * * */
   useEffect(() => {
-    dishTypeListRef.current.value = activeFilters.dish_type
     seasonListRef.current.value = activeFilters.season
-    ingredientsListRef.current.value = activeFilters.ingredients
-  }, [activeDishType, activeSeason, activeIngredient])
+  }, [activeSeason])
 
   /* * * * * * * * * * * * * * * *
    *
@@ -145,38 +131,6 @@ export default function Filters (props) {
         onChange={handleSeasonChange}>
         <option value='-'>Tous</option>
         {categories.season.map(opt => (
-          <option
-            key={opt}
-            value={opt}>
-            {`${opt.slice(0, 1).toUpperCase()}${opt.slice(1)}`}
-          </option>
-        ))}
-      </select>
-    </span>
-    <span className={`${c}__filter`}>
-      <Paragraph>par type de plat</Paragraph>
-      <select
-        defaultValue='-'
-        ref={dishTypeListRef}
-        onChange={handleDishTypeChange}>
-        <option value='-'>Tous</option>
-        {categories.dish_type.map(opt => (
-          <option
-            key={opt}
-            value={opt}>
-            {`${opt.slice(0, 1).toUpperCase()}${opt.slice(1)}`}
-          </option>
-        ))}
-      </select>
-    </span>
-    <span className={`${c}__filter`}>
-      <Paragraph>par ingrédient</Paragraph>
-      <select
-        defaultValue='-'
-        ref={ingredientsListRef}
-        onChange={handleIngredientsChange}>
-        <option value='-'>Tous</option>
-        {categories.ingredients.map(opt => (
           <option
             key={opt}
             value={opt}>

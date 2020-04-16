@@ -115,7 +115,7 @@ export default class App extends Component {
       const reach = await window.fetch(this.props.spreadsheet)
       if (!reach.ok) throw reach
       const data = await reach.text()
-      const parsedData = parseTsv(data, [23])[0].filter(article => article.ok === '1')
+      const parsedData = parseTsv(data, [20])[0]//.filter(article => article.ok === '1')
       const articles = this.addCategoriesToData(parsedData)
       const categories = this.listCategoriesOptions(articles)
       const defaultActiveFilters = {}
@@ -174,13 +174,13 @@ export default class App extends Component {
    * * * * * * * * * * * * * * * * */
   addCategoriesToData (data) {
     const categoriezed = data.map(article => {
-      const ingredients = article.ingredients.split(',').map(chunk => chunk.trim()).filter(e => e)
-      const dishType = article.dish_type.split(',').map(chunk => chunk.trim()).filter(e => e)
+      // const ingredients = article.ingredients.split(',').map(chunk => chunk.trim()).filter(e => e)
+      // const dishType = article.dish_type.split(',').map(chunk => chunk.trim()).filter(e => e)
       const season = article.season.split(',').map(chunk => chunk.trim()).filter(e => e)
       return {
         ...article,
-        _ingredients: ingredients,
-        _dish_type: dishType,
+        // _ingredients: ingredients,
+        // _dish_type: dishType,
         _season: season
       }
     })
@@ -193,20 +193,20 @@ export default class App extends Component {
    *
    * * * * * * * * * * * * * * * * */
   listCategoriesOptions (data) {
-    const ingredientsList = []
-    const dishTypeList = []
+    // const ingredientsList = []
+    // const dishTypeList = []
     const seasonList = []
     data.forEach(article => {
-      article._ingredients.forEach(ingredient => {
-        if (!ingredientsList.find(e => e === ingredient)) {
-          ingredientsList.push(ingredient)
-        }
-      })
-      article._dish_type.forEach(dishType => {
-        if (!dishTypeList.find(e => e === dishType)) {
-          dishTypeList.push(dishType)
-        }
-      })
+      // article._ingredients.forEach(ingredient => {
+      //   if (!ingredientsList.find(e => e === ingredient)) {
+      //     ingredientsList.push(ingredient)
+      //   }
+      // })
+      // article._dish_type.forEach(dishType => {
+      //   if (!dishTypeList.find(e => e === dishType)) {
+      //     dishTypeList.push(dishType)
+      //   }
+      // })
       article._season.forEach(season => {
         if (!seasonList.find(e => e === season)) {
           seasonList.push(season)
@@ -214,8 +214,8 @@ export default class App extends Component {
       })
     })
     return {
-      ingredients: ingredientsList,
-      dish_type: dishTypeList,
+      // ingredients: ingredientsList,
+      // dish_type: dishTypeList,
       season: seasonList
     }
   }
@@ -291,10 +291,11 @@ export default class App extends Component {
       season: activeSeason
     } = activeFilters
     const filteredArticles = (articles || []).filter(article => {
-      const hasCurrentIngredient = (activeIngredient === '-' || article._ingredients.find(e => e === activeIngredient))
-      const hasCurrentDishType = (activeDishType === '-' || article._dish_type.find(e => e === activeDishType))
+      // const hasCurrentIngredient = (activeIngredient === '-' || article._ingredients.find(e => e === activeIngredient))
+      // const hasCurrentDishType = (activeDishType === '-' || article._dish_type.find(e => e === activeDishType))
       const hasCurrentSeason = (activeSeason === '-' || article._season.find(e => e === activeSeason))
-      return hasCurrentIngredient && hasCurrentDishType && hasCurrentSeason
+      // return hasCurrentIngredient && hasCurrentDishType && hasCurrentSeason
+      return hasCurrentSeason
     })
     const slicedArticles = filteredArticles.slice(0, nbArticlesShown)
     const someRandomArticles = (articles || [])
