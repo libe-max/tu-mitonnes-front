@@ -122,7 +122,8 @@
 }
 
 .lblb-tu-mitonnes__full-article__inner {
-  max-width: 600px;
+  max-width: 100%;
+  width: 38rem;
 }
 
 .lblb-tu-mitonnes__full-article__inner button {
@@ -161,7 +162,8 @@
 }
 
 .lblb-tu-mitonnes__full-article__inner img {
-  max-width: 600px;
+  max-width: 100%;
+  width: 38rem;
   margin-bottom: 1rem;
   height: auto;
 }
