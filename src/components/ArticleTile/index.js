@@ -23,6 +23,7 @@ export default function ArticleTile (props) {
   const c = `${window.APP_GLOBAL.root_class}__article-tile`
   const { article } = props
   const [colors, setColors] = useState(['#FAFAFA', '#e91845', '#333333'])
+  const [isHovered, setIsHovered] = useState(false)
 
   /* * * * * * * * * * * * * * * *
    *
@@ -67,7 +68,16 @@ export default function ArticleTile (props) {
    * HANDLERS
    *
    * * * * * * * * * * * * * * * */
-  function handleTileClick (e) {
+  function handleOuterTileMouseEnter (e) {
+    setIsHovered(Date.now())
+  }
+
+  function handleOuterTileMouseLeave (e) {
+    setIsHovered(false)
+  }
+
+  function handleInnerTileClick (e) {
+    if ((Date.now() - isHovered) < 150) return
     openArticleInNewTab()
   }
 
@@ -86,17 +96,22 @@ export default function ArticleTile (props) {
    *
    * * * * * * * * * * * * * * * */
   const classes = [c]
+  if (isHovered) classes.push(`${c}_is-hovered`)
 
   return <div
     style={wrapperStyle}
-    onClick={handleTileClick}
+    onMouseEnter={handleOuterTileMouseEnter}
+    onMouseLeave={handleOuterTileMouseLeave}
     className={classes.join(' ')}>
     <div
       style={hoverBoxStyle}
+      onClick={handleInnerTileClick}
       className={`${c}__shaded-hover-bg`}>
       &nbsp;
     </div>
-    <div className={`${c}__content`}>
+    <div
+      onClick={handleInnerTileClick}
+      className={`${c}__content`}>
       <SectionTitle big>
         <span style={textStyle}>{article.title}</span>
       </SectionTitle>
