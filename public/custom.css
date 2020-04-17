@@ -22,6 +22,30 @@
   height: calc((100vw / (5/(4/3))) - 1rem);
 }
 
+.lblb-tu-mitonnes__article-tile
+  .lblb-tu-mitonnes__article-tile__shaded-hover-bg {
+    display: block;
+    opacity: .6;
+}
+
+.lblb-tu-mitonnes__article-tile:hover
+  .lblb-tu-mitonnes__article-tile__shaded-hover-bg {
+    display: block;
+    opacity: .8;
+}
+
+.lblb-tu-mitonnes__article-tile
+  .lblb-tu-mitonnes__article-tile__content {
+    display: block;
+    opacity: .7;
+}
+
+.lblb-tu-mitonnes__article-tile:hover
+  .lblb-tu-mitonnes__article-tile__content {
+    display: block;
+    opacity: 1;
+}
+
 @media screen and (max-width: 100rem) {
   .lblb-tu-mitonnes__article-tile {
     width: calc((100vw / 4) - 1rem);
