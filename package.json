@@ -2,6 +2,7 @@
   "name": "libe-apps-template",
   "version": "0.2.3",
   "private": true,
+  "homepage": "/apps/2020/03/selection-articles-liberation",
   "dependencies": {
     "chroma-js": "^2.1.0",
     "colors": "^1.4.0",
