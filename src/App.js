@@ -119,7 +119,7 @@ export default class App extends Component {
       const reach = await window.fetch(this.props.spreadsheet)
       if (!reach.ok) throw reach
       const data = await reach.text()
-      const parsedData = parseTsv(data, [20])[0]//.filter(article => article.ok === '1')
+      const parsedData = parseTsv(data, [20])[0].filter(article => article.ok === '1')
       const articles = this.addCategoriesToData(parsedData)
       const categories = this.listCategoriesOptions(articles)
       const defaultActiveFilters = {}
